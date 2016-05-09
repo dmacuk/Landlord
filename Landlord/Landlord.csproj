@@ -98,15 +98,12 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Convertors\ByteArrayToImageConverter.cs" />
-    <Compile Include="Implementations\Design\DesignDataService.cs" />
     <Compile Include="Exceptions\AddressTypeException.cs" />
     <Compile Include="Implementations\Design\DesignPictureDataService.cs" />
     <Compile Include="Implementations\Design\DesignPropertyDataService.cs" />
     <Compile Include="Implementations\PictureDataService.cs" />
     <Compile Include="Implementations\PropertyDataService.cs" />
     <Compile Include="Interface\IPictureDataService.cs" />
-    <Compile Include="Implementations\DataService.cs" />
-    <Compile Include="Interface\IDataService.cs" />
     <Compile Include="Interface\IPropertyDataService.cs" />
     <Compile Include="Model\Address.cs">
       <DependentUpon>LandlordModel.tt</DependentUpon>
@@ -131,6 +128,7 @@
       <DependentUpon>LandlordModel.edmx</DependentUpon>
     </Compile>
     <Compile Include="Model\Partial\Address.cs" />
+    <Compile Include="Model\Partial\Property.cs" />
     <Compile Include="Model\Picture.cs">
       <DependentUpon>LandlordModel.tt</DependentUpon>
     </Compile>
@@ -143,7 +141,6 @@
     <Compile Include="Model\Tennant.cs">
       <DependentUpon>LandlordModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\PicturesViewModel.cs" />
     <Compile Include="ViewModel\PropertyViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
@@ -156,7 +153,6 @@
     <Compile Include="Views\UserControls\PropertyList.xaml.cs">
       <DependentUpon>PropertyList.xaml</DependentUpon>
     </Compile>
-    <Compile Include="VOs\PropertyVO.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

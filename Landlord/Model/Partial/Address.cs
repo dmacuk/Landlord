@@ -7,16 +7,6 @@ namespace Landlord.Model
     {
         private bool _dirty;
 
-        public Address()
-        {
-            Address1 = "NO ADDRESS ENTERED";
-            Address2 = string.Empty;
-            Address3 = string.Empty;
-            City = string.Empty;
-            Postcode = string.Empty;
-            Country = string.Empty;
-        }
-
         public string FullAddress
         {
             get
@@ -30,6 +20,19 @@ namespace Landlord.Model
                 AddAddressLine(sb, Country);
                 return sb.ToString().Trim();
             }
+        }
+
+        public static Address GetNewAddress()
+        {
+            return new Address
+            {
+                Address1 = "NO ADDRESS ENTERED",
+                Address2 = string.Empty,
+                Address3 = string.Empty,
+                City = string.Empty,
+                Postcode = string.Empty,
+                Country = string.Empty
+            };
         }
 
         public bool IsDirty()

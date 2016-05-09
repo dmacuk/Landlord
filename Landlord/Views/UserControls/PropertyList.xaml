@@ -4,15 +4,15 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:vOs="clr-namespace:Landlord.VOs"
+    xmlns:model="clr-namespace:Landlord.Model"
     d:DesignHeight="300"
     d:DesignWidth="300"
     DataContext="{Binding PropertyViewModel, Source={StaticResource Locator}}"
     mc:Ignorable="d">
     <UserControl.Resources>
-        <DataTemplate x:Key="PropertyItemTemplate" DataType="vOs:PropertyVo">
+        <DataTemplate x:Key="PropertyItemTemplate" DataType="model:Property">
             <StackPanel Margin="5">
-                <TextBlock FontWeight="Bold" Text="{Binding FullAddress}" />
+                <TextBlock FontWeight="Bold" Text="{Binding Address.FullAddress}" />
             </StackPanel>
         </DataTemplate>
     </UserControl.Resources>
@@ -42,7 +42,7 @@
             Style="{StaticResource OverallStyle}"
             ItemTemplate="{StaticResource PropertyItemTemplate}"
             ItemsSource="{Binding Properties}"
-            SelectedItem="{Binding PropertyVo}" />
+            SelectedItem="{Binding Property}" />
         <StackPanel
             Grid.Row="2"
             HorizontalAlignment="Center"

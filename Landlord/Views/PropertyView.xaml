@@ -8,7 +8,8 @@
     xmlns:userControls="clr-namespace:Landlord.Views.UserControls"
     Title="Properties"
     DataContext="{Binding PropertyViewModel, Source={StaticResource Locator}}"
-    mc:Ignorable="d ignore" Width="427" d:DesignHeight="438">
+    mc:Ignorable="d ignore"
+    Closing="WindowClosing">
 
     <Window.Resources>
     </Window.Resources>

@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="Model.Store" Provider="System.Data.VistaDB5" ProviderManifestToken="5.0" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="Model.Store" Provider="System.Data.VistaDB5" ProviderManifestToken="5.0" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="Address">
           <Key>
             <PropertyRef Name="Id" />
@@ -44,6 +44,7 @@
             <PropertyRef Name="id" />
           </Key>
           <Property Name="id" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="AddressId" Type="bigint" Nullable="false" />
         </EntityType>
         <EntityType Name="Room">
           <Key>
@@ -155,6 +156,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Property_Address">
+          <End Role="Address" Type="Self.Address" Multiplicity="1" />
+          <End Role="Property" Type="Self.Property" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Address">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Property">
+              <PropertyRef Name="AddressId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Room_Property">
           <End Role="Property" Type="Self.Property" Multiplicity="1" />
           <End Role="Room" Type="Self.Room" Multiplicity="*" />
@@ -218,6 +231,10 @@
             <End Role="Tennant" EntitySet="Tennant" />
             <End Role="Picture" EntitySet="Picture" />
           </AssociationSet>
+          <AssociationSet Name="FK_Property_Address" Association="Self.FK_Property_Address">
+            <End Role="Address" EntitySet="Address" />
+            <End Role="Property" EntitySet="Property" />
+          </AssociationSet>
           <AssociationSet Name="FK_Room_Property" Association="Self.FK_Room_Property">
             <End Role="Property" EntitySet="Property" />
             <End Role="Room" EntitySet="Room" />
@@ -227,8 +244,7 @@
             <End Role="Tennant" EntitySet="Tennant" />
           </AssociationSet>
         </EntityContainer>
-      </Schema>
-    </edmx:StorageModels>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="Model" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -249,6 +265,7 @@
           <NavigationProperty Name="Property" Relationship="Self.FK_Address_Property" FromRole="Address" ToRole="Property" />
           <NavigationProperty Name="Tennant" Relationship="Self.FK_Address_Tennant" FromRole="Address" ToRole="Tennant" />
           <NavigationProperty Name="Tennant1" Relationship="Self.FK_Address_Tennant_Previous" FromRole="Address" ToRole="Tennant" />
+          <NavigationProperty Name="Properties" Relationship="Model.FK_Property_Address" FromRole="Address" ToRole="Property" />
         </EntityType>
         <EntityType Name="Furniture">
           <Key>
@@ -284,6 +301,8 @@
           <NavigationProperty Name="Pictures" Relationship="Self.FK_Picture_Property" FromRole="Property" ToRole="Picture" />
           <NavigationProperty Name="Rooms" Relationship="Self.FK_Room_Property" FromRole="Property" ToRole="Room" />
           <NavigationProperty Name="Tennants" Relationship="Self.FK_Tennant_Property" FromRole="Property" ToRole="Tennant" />
+          <Property Name="AddressId" Type="Int64" Nullable="false" />
+          <NavigationProperty Name="Address" Relationship="Model.FK_Property_Address" FromRole="Property" ToRole="Address" />
         </EntityType>
         <EntityType Name="Room">
           <Key>
@@ -473,7 +492,23 @@
             <End Role="Property" EntitySet="Properties" />
             <End Role="Tennant" EntitySet="Tennants" />
           </AssociationSet>
+          <AssociationSet Name="FK_Property_Address" Association="Model.FK_Property_Address">
+            <End Role="Address" EntitySet="Addresses" />
+            <End Role="Property" EntitySet="Properties" />
+          </AssociationSet>
         </EntityContainer>
+        <Association Name="FK_Property_Address">
+          <End Type="Model.Address" Role="Address" Multiplicity="1" />
+          <End Type="Model.Property" Role="Property" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Address">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Property">
+              <PropertyRef Name="AddressId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -520,6 +555,7 @@
           <EntitySetMapping Name="Properties">
             <EntityTypeMapping TypeName="Model.Property">
               <MappingFragment StoreEntitySet="Property">
+                <ScalarProperty Name="AddressId" ColumnName="AddressId" />
                 <ScalarProperty Name="Id" ColumnName="id" />
               </MappingFragment>
             </EntityTypeMapping>

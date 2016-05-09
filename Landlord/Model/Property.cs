@@ -24,6 +24,7 @@ namespace Landlord.Model
         }
     
         public long Id { get; set; }
+        public long AddressId { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Address> Addresses { get; set; }
@@ -33,5 +34,6 @@ namespace Landlord.Model
         public virtual ICollection<Room> Rooms { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Tennant> Tennants { get; set; }
+        public virtual Address Address { get; set; }
     }
 }

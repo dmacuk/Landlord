@@ -21,6 +21,7 @@
         <AssociationConnector Association="Model.FK_Picture_Tennant" ManuallyRouted="false" />
         <AssociationConnector Association="Model.FK_Room_Property" ManuallyRouted="false" />
         <AssociationConnector Association="Model.FK_Tennant_Property" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.FK_Property_Address" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

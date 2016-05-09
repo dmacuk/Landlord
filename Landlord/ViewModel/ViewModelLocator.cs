@@ -42,16 +42,9 @@ namespace Landlord.ViewModel
                 SimpleIoc.Default.Register<IPropertyDataService, PropertyDataService>();
             }
 
-            SimpleIoc.Default.Register<MainViewModel>();
             SimpleIoc.Default.Register<PicturesViewModel>();
             SimpleIoc.Default.Register<PropertyViewModel>();
         }
-
-        /// <summary>
-        ///     Gets the Main property.
-        /// </summary>
-        // ReSharper disable MemberCanBeMadeStatic.Global
-        public MainViewModel Main => ServiceLocator.Current.GetInstance<MainViewModel>();
 
         public PicturesViewModel Pictures => ServiceLocator.Current.GetInstance<PicturesViewModel>();
 

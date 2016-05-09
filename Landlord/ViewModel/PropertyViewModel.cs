@@ -2,30 +2,24 @@
 using GalaSoft.MvvmLight.CommandWpf;
 using Landlord.Interface;
 using Landlord.Model;
-using Landlord.VOs;
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Windows.Data;
 using System.Windows.Input;
 
 namespace Landlord.ViewModel
 {
-    public class PropertySorter : IComparer<PropertyVo>, IComparer
+    public class PropertySorter : IComparer
     {
         public int Compare(object x, object y)
         {
-            var o1 = x as PropertyVo;
-            var o2 = x as PropertyVo;
-            return string.Compare(o1?.FullAddress?.ToLower() ?? "", o2?.FullAddress?.ToLower() ?? "",
+            var o1 = x as Property;
+            var o2 = x as Property;
+            return string.Compare(o1?.Address?.FullAddress?.ToLower() ?? "", o2?.Address?.FullAddress?.ToLower() ?? "",
                 StringComparison.Ordinal);
-        }
-
-        public int Compare(PropertyVo x, PropertyVo y)
-        {
-            return string.Compare(x.FullAddress.ToLower(), y.FullAddress.ToLower(), StringComparison.Ordinal);
         }
     }
 
@@ -46,9 +40,9 @@ namespace Landlord.ViewModel
         private string _dummy;
         private string _filterValue;
         private string _postcode;
-        private ObservableCollection<PropertyVo> _properties;
+        private ObservableCollection<Property> _properties;
 
-        private PropertyVo _propertyVo;
+        private Property _property;
 
         public PropertyViewModel(IPropertyDataService dataService)
         {
@@ -61,14 +55,14 @@ namespace Landlord.ViewModel
                     return;
                 }
 
-                _properties = new ObservableCollection<PropertyVo>(properties);
+                _properties = new ObservableCollection<Property>(properties);
                 Properties = CollectionViewSource.GetDefaultView(_properties);
                 Properties.Filter = Filter;
                 ((ListCollectionView)Properties).CustomSort = new PropertySorter();
                 if (!Properties.IsEmpty)
                 {
                     Properties.MoveCurrentToFirst();
-                    PropertyVo = (PropertyVo)Properties.CurrentItem;
+                    Property = (Property)Properties.CurrentItem;
                 }
             });
         }
@@ -77,60 +71,60 @@ namespace Landlord.ViewModel
 
         public string Address1
         {
-            get { return PropertyVo?.Address1; }
+            get { return Property?.Address?.Address1; }
             set
             {
-                if (Set(() => Address1, ref _address1, value) && PropertyVo != null)
+                if (Set(() => Address1, ref _address1, value) && Property != null)
                 {
-                    PropertyVo.Address1 = value;
+                    Property.Address.Address1 = value;
                 }
             }
         }
 
         public string Address2
         {
-            get { return PropertyVo?.Address2; }
+            get { return Property?.Address?.Address2; }
             set
             {
-                if (Set(() => Address2, ref _address2, value) && PropertyVo != null)
+                if (Set(() => Address2, ref _address2, value) && Property != null)
                 {
-                    PropertyVo.Address2 = value;
+                    Property.Address.Address2 = value;
                 }
             }
         }
 
         public string Address3
         {
-            get { return PropertyVo?.Address3; }
+            get { return Property?.Address?.Address3; }
             set
             {
-                if (Set(() => Address3, ref _address3, value) && PropertyVo != null)
+                if (Set(() => Address3, ref _address3, value) && Property != null)
                 {
-                    PropertyVo.Address3 = value;
+                    Property.Address.Address3 = value;
                 }
             }
         }
 
         public string City
         {
-            get { return PropertyVo?.City; }
+            get { return Property?.Address?.City; }
             set
             {
-                if (Set(() => City, ref _city, value) && PropertyVo != null)
+                if (Set(() => City, ref _city, value) && Property != null)
                 {
-                    PropertyVo.City = value;
+                    Property.Address.City = value;
                 }
             }
         }
 
         public string Country
         {
-            get { return PropertyVo?.Country; }
+            get { return Property?.Address?.Country; }
             set
             {
-                if (Set(() => Country, ref _country, value) && PropertyVo != null)
+                if (Set(() => Country, ref _country, value) && Property != null)
                 {
-                    PropertyVo.Country = value;
+                    Property.Address.Country = value;
                 }
             }
         }
@@ -150,43 +144,58 @@ namespace Landlord.ViewModel
 
         public string FullAddress
         {
-            get { return PropertyVo?.FullAddress; }
+            get { return Property?.Address?.FullAddress; }
             set { Set(() => FullAddress, ref _dummy, value); }
         }
 
         public string Postcode
         {
-            get { return PropertyVo?.Postcode; }
+            get { return Property?.Address?.Postcode; }
             set
             {
-                if (Set(() => Postcode, ref _postcode, value) && PropertyVo != null)
+                if (Set(() => Postcode, ref _postcode, value) && Property != null)
                 {
-                    PropertyVo.Postcode = value;
+                    Property.Address.Postcode = value;
                 }
             }
         }
 
         public ICollectionView Properties { get; private set; }
 
-        public PropertyVo PropertyVo
+        public Property Property
         {
-            get { return _propertyVo; }
+            get { return _property; }
             set
             {
-                if (Set(() => PropertyVo, ref _propertyVo, value))
+                if (Set(() => Property, ref _property, value))
                 {
                     SetTextFields(value);
                 }
             }
         }
 
+        public bool IsDirty()
+        {
+            return _properties.Any(vo => vo.IsDirty());
+        }
+
+        public void Save()
+        {
+            foreach (var vo in _properties.Where(p => p.IsDirty()))
+            {
+                _dataService.Save(vo);
+            }
+        }
+
         private void AddProperty()
         {
-            _properties.Add(new PropertyVo(null, new Address()));
+            _properties.Add(new Property { Address = Address.GetNewAddress() });
         }
 
         private void DeleteProperty()
         {
+            //            _dataService.Delete(Property);
+            _properties.Remove(Property);
         }
 
         private void EditProperty()
@@ -195,19 +204,20 @@ namespace Landlord.ViewModel
 
         private bool Filter(object obj)
         {
-            var vo = (PropertyVo)obj;
+            var vo = (Property)obj;
             return string.IsNullOrWhiteSpace(FilterValue) ||
-                   vo.FullAddress.ToLower().Contains(FilterValue.ToLower().Trim());
+                   vo.Address.FullAddress.ToLower().Contains(FilterValue.ToLower().Trim());
         }
 
-        private void SetTextFields(PropertyVo vo)
+        private void SetTextFields(Property vo)
         {
-            Address1 = vo?.Address1;
-            Address2 = vo?.Address2;
-            Address3 = vo?.Address3;
-            City = vo?.City;
-            Postcode = vo?.Postcode;
-            Country = vo?.Country;
+            var address = vo?.Address;
+            Address1 = address?.Address1;
+            Address2 = address?.Address2;
+            Address3 = address?.Address3;
+            City = address?.City;
+            Postcode = address?.Postcode;
+            Country = address?.Country;
         }
     }
 }

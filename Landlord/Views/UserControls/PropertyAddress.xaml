@@ -1,10 +1,11 @@
-﻿<UserControl x:Class="Landlord.Views.UserControls.PropertyAddress"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             mc:Ignorable="d"
-             DataContext="{Binding PropertyViewModel, Source={StaticResource Locator}}">
+﻿<UserControl
+    x:Class="Landlord.Views.UserControls.PropertyAddress"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    DataContext="{Binding PropertyViewModel, Source={StaticResource Locator}}"
+    mc:Ignorable="d" d:DesignWidth="132.474">
     <!--    <GroupBox Header="Address Details" BorderThickness="1" BorderBrush="Black">-->
     <Grid>
         <Grid.ColumnDefinitions>
@@ -20,16 +21,56 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <TextBlock Grid.Column="0" Grid.Row="0" Text="Address" Style="{StaticResource CaptionStyle}" />
-        <TextBlock Grid.Column="0" Grid.Row="3" Text="City" Style="{StaticResource CaptionStyle}" />
-        <TextBlock Grid.Column="0" Grid.Row="4" Text="Postcode" Style="{StaticResource CaptionStyle}" />
-        <TextBlock Grid.Column="0" Grid.Row="5" Text="Country" Style="{StaticResource CaptionStyle}" />
-        <TextBox Grid.Column="1" Grid.Row="0" Text="{Binding Address1}" Style="{StaticResource TextBoxStyle}" />
-        <TextBox Grid.Column="1" Grid.Row="1" Text="{Binding Address2}" Style="{StaticResource TextBoxStyle}" />
-        <TextBox Grid.Column="1" Grid.Row="2" Text="{Binding Address3}" Style="{StaticResource TextBoxStyle}" />
-        <TextBox Grid.Column="1" Grid.Row="3" Text="{Binding City}" Style="{StaticResource TextBoxStyle}" />
-        <TextBox Grid.Column="1" Grid.Row="4" Text="{Binding Postcode}" Style="{StaticResource TextBoxStyle}" />
-        <TextBox Grid.Column="1" Grid.Row="5" Text="{Binding Country}" Style="{StaticResource TextBoxStyle}" />
+        <TextBlock
+            Grid.Row="0"
+            Grid.Column="0"
+            Style="{StaticResource CaptionStyle}"
+            Text="Address" />
+        <TextBlock
+            Grid.Row="3"
+            Grid.Column="0"
+            Style="{StaticResource CaptionStyle}"
+            Text="City" />
+        <TextBlock
+            Grid.Row="4"
+            Grid.Column="0"
+            Style="{StaticResource CaptionStyle}"
+            Text="Postcode" />
+        <TextBlock
+            Grid.Row="5"
+            Grid.Column="0"
+            Style="{StaticResource CaptionStyle}"
+            Text="Country" />
+        <TextBox
+            Grid.Row="0"
+            Grid.Column="1"
+            Style="{StaticResource TextBoxStyle}"
+            Text="{Binding Address1, UpdateSourceTrigger=PropertyChanged}" />
+        <TextBox
+            Grid.Row="1"
+            Grid.Column="1"
+            Style="{StaticResource TextBoxStyle}"
+            Text="{Binding Address2, UpdateSourceTrigger=PropertyChanged}" />
+        <TextBox
+            Grid.Row="2"
+            Grid.Column="1"
+            Style="{StaticResource TextBoxStyle}"
+            Text="{Binding Address3, UpdateSourceTrigger=PropertyChanged}" />
+        <TextBox
+            Grid.Row="3"
+            Grid.Column="1"
+            Style="{StaticResource TextBoxStyle}"
+            Text="{Binding City, UpdateSourceTrigger=PropertyChanged}" />
+        <TextBox
+            Grid.Row="4"
+            Grid.Column="1"
+            Style="{StaticResource TextBoxStyle}"
+            Text="{Binding Postcode, UpdateSourceTrigger=PropertyChanged}" />
+        <TextBox
+            Grid.Row="5"
+            Grid.Column="1"
+            Style="{StaticResource TextBoxStyle}"
+            Text="{Binding Country, UpdateSourceTrigger=PropertyChanged}" />
     </Grid>
     <!--    </GroupBox>-->
 </UserControl>
