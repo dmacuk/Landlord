@@ -54,7 +54,7 @@ namespace Landlord.VOs
 
         public bool IsDirty()
         {
-            return Property.id == 0 || Address.IsDirty();
+            return Property.Id == 0 || Address.IsDirty();
         }
     }
 }
