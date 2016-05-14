@@ -31,6 +31,12 @@ namespace Landlord.Model
 
         public Address()
         {
+            _address1 = "NO DETAILS ENTERED";
+            _address2 = "NO DETAILS ENTERED";
+            _address3 = "NO DETAILS ENTERED";
+            _city = "NO DETAILS ENTERED";
+            _postcode = "NO DETAILS ENTERED";
+            _country = "NO DETAILS ENTERED";
         }
 
         public string Address1

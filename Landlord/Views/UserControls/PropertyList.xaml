@@ -27,15 +27,30 @@
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
             <TextBlock
+                Grid.Row="0"
                 Grid.Column="0"
                 Style="{StaticResource CaptionStyle}"
                 Text="Filter" />
             <TextBox
+                Grid.Row="0"
                 Grid.Column="1"
-                HorizontalAlignment="Stretch"
                 Style="{StaticResource TextBoxStyle}"
                 Text="{Binding FilterValue, UpdateSourceTrigger=PropertyChanged}" />
+            <TextBlock
+                Grid.Row="1"
+                Grid.Column="0"
+                Style="{StaticResource CaptionStyle}"
+                Text="Show Hidden" />
+            <CheckBox
+                Grid.Row="1"
+                Grid.Column="1"
+                IsChecked="{Binding ShowHidden}"
+                Style="{StaticResource OverallStyle}" />
         </Grid>
         <ListView
             Grid.Row="1"
@@ -53,15 +68,10 @@
                 Command="{Binding AddPropertyCommand}"
                 Content="Add" />
             <Button
-                Width="{Binding ElementName=DeleteButton, Path=ActualWidth}"
-                Style="{StaticResource OverallStyle}"
-                Command="{Binding EditPropertyCommand}"
-                Content="Edit" />
-            <Button
                 x:Name="DeleteButton"
                 Style="{StaticResource OverallStyle}"
                 Command="{Binding DeletePropertyCommand}"
-                Content="Delete" />
+                Content="Hide" />
         </StackPanel>
     </Grid>
 </UserControl>

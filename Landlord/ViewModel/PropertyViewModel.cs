@@ -2,8 +2,7 @@
 using GalaSoft.MvvmLight.CommandWpf;
 using Landlord.Interface;
 using Landlord.Model;
-using System;
-using System.Collections;
+using Landlord.ViewModel.Utils;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows.Data;
@@ -12,17 +11,6 @@ using Utils.FullyObservableCollection;
 
 namespace Landlord.ViewModel
 {
-    public class PropertySorter : IComparer
-    {
-        public int Compare(object x, object y)
-        {
-            var o1 = (Property)x;
-            var o2 = (Property)y;
-            return string.Compare(o1.Address.FullAddress, o2.Address.FullAddress,
-                StringComparison.CurrentCultureIgnoreCase);
-        }
-    }
-
     public class PropertyViewModel : ViewModelBase
     {
         private readonly IPropertyDataService _dataService;
@@ -38,6 +26,8 @@ namespace Landlord.ViewModel
 
         private Property _property;
 
+        private bool _showHidden;
+
         public PropertyViewModel(IPropertyDataService dataService)
         {
             _dataService = dataService;
@@ -45,7 +35,6 @@ namespace Landlord.ViewModel
             {
                 if (error != null)
                 {
-                    // Report error here
                     return;
                 }
 
@@ -53,11 +42,9 @@ namespace Landlord.ViewModel
                 Properties = CollectionViewSource.GetDefaultView(_properties);
                 Properties.Filter = Filter;
                 ((ListCollectionView)Properties).CustomSort = new PropertySorter();
-                if (!Properties.IsEmpty)
-                {
-                    Properties.MoveCurrentToFirst();
-                    Property = (Property)Properties.CurrentItem;
-                }
+                if (Properties.IsEmpty) return;
+                Properties.MoveCurrentToFirst();
+                Property = (Property)Properties.CurrentItem;
             });
         }
 
@@ -65,13 +52,11 @@ namespace Landlord.ViewModel
 
         public Address Address
         {
-            get { return Property.Address; }
+            get { return Property?.Address; }
             set { Set(() => Address, ref _address, value); }
         }
 
         public ICommand DeletePropertyCommand => new RelayCommand(DeleteProperty);
-
-        public ICommand EditPropertyCommand => new RelayCommand(EditProperty);
 
         public string FilterValue
         {
@@ -97,8 +82,17 @@ namespace Landlord.ViewModel
             {
                 if (Set(() => Property, ref _property, value))
                 {
-                    Address = value.Address;
+                    Address = value?.Address;
                 }
+            }
+        }
+
+        public bool ShowHidden
+        {
+            get { return _showHidden; }
+            set
+            {
+                if (Set(() => ShowHidden, ref _showHidden, value)) Properties.Refresh();
             }
         }
 
@@ -123,17 +117,14 @@ namespace Landlord.ViewModel
 
         private void DeleteProperty()
         {
-            //            _dataService.Delete(Property);
-            _properties.Remove(Property);
-        }
-
-        private void EditProperty()
-        {
+            Property.Hidden = true;
+            Properties.Refresh();
         }
 
         private bool Filter(object obj)
         {
             var vo = (Property)obj;
+            if (!ShowHidden && vo.Hidden) return false;
             return string.IsNullOrWhiteSpace(FilterValue) ||
                    vo.Address.FullAddress.ToLower().Contains(FilterValue.ToLower().Trim());
         }

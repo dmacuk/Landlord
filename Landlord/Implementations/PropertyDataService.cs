@@ -16,9 +16,9 @@ namespace Landlord.Implementations
             action(results, null);
         }
 
-        public void Save(Property property)
+        public async void Save(Property property)
         {
-            _persister.Save(property);
+            await _persister.Save(property);
         }
     }
 }

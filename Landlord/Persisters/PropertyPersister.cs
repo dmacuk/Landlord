@@ -1,8 +1,9 @@
-using Landlord.Model;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Threading.Tasks;
+using Landlord.Model;
+using Landlord.Persisters.Utils;
 
 namespace Landlord.Persisters
 {
@@ -39,23 +40,43 @@ namespace Landlord.Persisters
             return results;
         }
 
-        public void Save(Property property)
+        public async Task Save(Property property)
         {
             if (property.Id == 0)
             {
-                AddProperty(property);
+                await AddProperty(property);
             }
             else
             {
-                UpdateProperty(property);
+                await UpdateProperty(property);
             }
         }
 
-        private void AddProperty(Property property)
+        private static async Task AddProperty(Property property)
         {
+            using (var conn = GetConnection())
+            {
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = SqlUtils.InsertAddress;
+                    var parameters = SqlUtils.GetAddressParameters(cmd, property.Address);
+                    cmd.Parameters.AddRange(parameters);
+                    await cmd.ExecuteNonQueryAsync();
+                    cmd.CommandText = SqlUtils.LastIdentity;
+                    var addressId = await cmd.ExecuteScalarAsync();
+
+                    // @Address1, @Address2, @Address3, @City, @Postcode, @Country
+                    property.AddressId = (long)addressId;
+                    cmd.CommandText = SqlUtils.InsertProperty;
+                    cmd.Parameters.Clear();
+                    parameters = SqlUtils.GetPropertyParameters(cmd, property);
+                    cmd.Parameters.AddRange(parameters);
+                    await cmd.ExecuteNonQueryAsync();
+                }
+            }
         }
 
-        private DbConnection GetConnection()
+        private static DbConnection GetConnection()
         {
             var providerFactory = DbProviderFactories.GetFactory("System.Data.VistaDB5");
             var connection = providerFactory.CreateConnection();
@@ -65,8 +86,24 @@ namespace Landlord.Persisters
             return connection;
         }
 
-        private void UpdateProperty(Property property)
+        private async Task UpdateProperty(Property property)
         {
+            using (var conn = GetConnection())
+            {
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = SqlUtils.UpdateProperty;
+                    var parameters = SqlUtils.GetPropertyParameters(cmd, property);
+                    cmd.Parameters.AddRange(parameters);
+                    await cmd.ExecuteNonQueryAsync();
+
+                    cmd.CommandText = SqlUtils.UpdateAddress;
+                    cmd.Parameters.Clear();
+                    parameters = SqlUtils.GetAddressParameters(cmd, property.Address);
+                    cmd.Parameters.AddRange(parameters);
+                    await cmd.ExecuteNonQueryAsync();
+                }
+            }
         }
     }
 }
