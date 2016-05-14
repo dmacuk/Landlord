@@ -4,11 +4,11 @@ using Landlord.Interface;
 using Landlord.Model;
 using System;
 using System.Collections;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows.Data;
 using System.Windows.Input;
+using Utils.FullyObservableCollection;
 
 namespace Landlord.ViewModel
 {
@@ -16,31 +16,25 @@ namespace Landlord.ViewModel
     {
         public int Compare(object x, object y)
         {
-            var o1 = x as Property;
-            var o2 = x as Property;
-            return string.Compare(o1?.Address?.FullAddress?.ToLower() ?? "", o2?.Address?.FullAddress?.ToLower() ?? "",
-                StringComparison.Ordinal);
+            var o1 = (Property)x;
+            var o2 = (Property)y;
+            return string.Compare(o1.Address.FullAddress, o2.Address.FullAddress,
+                StringComparison.CurrentCultureIgnoreCase);
         }
     }
 
-    /// <summary>
-    ///     This class contains properties that a View can data bind to.
-    ///     <para>
-    ///         See http://www.galasoft.ch/mvvm
-    ///     </para>
-    /// </summary>
     public class PropertyViewModel : ViewModelBase
     {
         private readonly IPropertyDataService _dataService;
-        private string _address1;
-        private string _address2;
-        private string _address3;
-        private string _city;
-        private string _country;
+
+        private Address _address;
+
         private string _dummy;
+
         private string _filterValue;
-        private string _postcode;
-        private ObservableCollection<Property> _properties;
+
+        //        private string _postcode;
+        private FullyObservableCollection<Property> _properties;
 
         private Property _property;
 
@@ -55,7 +49,7 @@ namespace Landlord.ViewModel
                     return;
                 }
 
-                _properties = new ObservableCollection<Property>(properties);
+                _properties = new FullyObservableCollection<Property>(properties);
                 Properties = CollectionViewSource.GetDefaultView(_properties);
                 Properties.Filter = Filter;
                 ((ListCollectionView)Properties).CustomSort = new PropertySorter();
@@ -69,64 +63,10 @@ namespace Landlord.ViewModel
 
         public ICommand AddPropertyCommand => new RelayCommand(AddProperty);
 
-        public string Address1
+        public Address Address
         {
-            get { return Property?.Address?.Address1; }
-            set
-            {
-                if (Set(() => Address1, ref _address1, value) && Property != null)
-                {
-                    Property.Address.Address1 = value;
-                }
-            }
-        }
-
-        public string Address2
-        {
-            get { return Property?.Address?.Address2; }
-            set
-            {
-                if (Set(() => Address2, ref _address2, value) && Property != null)
-                {
-                    Property.Address.Address2 = value;
-                }
-            }
-        }
-
-        public string Address3
-        {
-            get { return Property?.Address?.Address3; }
-            set
-            {
-                if (Set(() => Address3, ref _address3, value) && Property != null)
-                {
-                    Property.Address.Address3 = value;
-                }
-            }
-        }
-
-        public string City
-        {
-            get { return Property?.Address?.City; }
-            set
-            {
-                if (Set(() => City, ref _city, value) && Property != null)
-                {
-                    Property.Address.City = value;
-                }
-            }
-        }
-
-        public string Country
-        {
-            get { return Property?.Address?.Country; }
-            set
-            {
-                if (Set(() => Country, ref _country, value) && Property != null)
-                {
-                    Property.Address.Country = value;
-                }
-            }
+            get { return Property.Address; }
+            set { Set(() => Address, ref _address, value); }
         }
 
         public ICommand DeletePropertyCommand => new RelayCommand(DeleteProperty);
@@ -144,20 +84,8 @@ namespace Landlord.ViewModel
 
         public string FullAddress
         {
-            get { return Property?.Address?.FullAddress; }
+            get { return Property.Address.FullAddress; }
             set { Set(() => FullAddress, ref _dummy, value); }
-        }
-
-        public string Postcode
-        {
-            get { return Property?.Address?.Postcode; }
-            set
-            {
-                if (Set(() => Postcode, ref _postcode, value) && Property != null)
-                {
-                    Property.Address.Postcode = value;
-                }
-            }
         }
 
         public ICollectionView Properties { get; private set; }
@@ -169,7 +97,7 @@ namespace Landlord.ViewModel
             {
                 if (Set(() => Property, ref _property, value))
                 {
-                    SetTextFields(value);
+                    Address = value.Address;
                 }
             }
         }
@@ -189,7 +117,8 @@ namespace Landlord.ViewModel
 
         private void AddProperty()
         {
-            _properties.Add(new Property { Address = Address.GetNewAddress() });
+            var property = new Property();
+            _properties.Add(property);
         }
 
         private void DeleteProperty()
@@ -207,17 +136,6 @@ namespace Landlord.ViewModel
             var vo = (Property)obj;
             return string.IsNullOrWhiteSpace(FilterValue) ||
                    vo.Address.FullAddress.ToLower().Contains(FilterValue.ToLower().Trim());
-        }
-
-        private void SetTextFields(Property vo)
-        {
-            var address = vo?.Address;
-            Address1 = address?.Address1;
-            Address2 = address?.Address2;
-            Address3 = address?.Address3;
-            City = address?.City;
-            Postcode = address?.Postcode;
-            Country = address?.Country;
         }
     }
 }

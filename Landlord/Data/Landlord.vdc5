@@ -73,4 +73,7 @@
     <defaultSettings>0</defaultSettings>
     <selectedTab>0</selectedTab>
   </Table1>
+  <Table2>
+    <QueryColumn>select * from address</QueryColumn>
+  </Table2>
 </NewDataSet>

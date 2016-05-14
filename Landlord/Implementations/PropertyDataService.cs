@@ -1,62 +1,24 @@
 ﻿using Landlord.Interface;
 using Landlord.Model;
+using Landlord.Persisters;
 using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 
 namespace Landlord.Implementations
 {
     public class PropertyDataService : IPropertyDataService
     {
+        private readonly PropertyPersister _persister = new PropertyPersister();
+
         public async void GetProperties(Action<List<Property>, Exception> action)
         {
-            using (var ctx = new LandlordEntities())
-            {
-                var properties = await ctx.Properties.ToListAsync();
-                var vos = new List<Property>();
-                foreach (var property in properties)
-                {
-                    //                    var address = property.Addresses.FirstOrDefault();
-                    //                    if (property.Addresses.Count > 0)
-                    //                    {
-                    //                        var addresses = property.Addresses.ToList();
-                    //                        if (addresses.Count > 0)
-                    //                        {
-                    //                            address = addresses[0];
-                    //                        }
-                    //                    }
-                    vos.Add(property);
-                }
-                action(vos, null);
-            }
+            var results = await _persister.GetProperties();
+            action(results, null);
         }
 
-        public void Save(Property propertyVo)
+        public void Save(Property property)
         {
-            //            using (var ctx = new LandlordEntities())
-            //            {
-            //                var property = propertyVo.Property;
-            //                if (property.Id == 0)
-            //                {
-            //                    ctx.Properties.Add(property);
-            //                }
-            //
-            //                await ctx.SaveChangesAsync();
-            //
-            //                var address = propertyVo.Address;
-            //                address.Property = property;
-            //
-            //                var addresses = ctx.Addresses;
-            //                if (address.Id == 0)
-            //                {
-            //                    addresses.Add(address);
-            //                }
-            //                else
-            //                {
-            //                    addresses.Attach(address);
-            //                }
-            //
-            //                await ctx.SaveChangesAsync();
+            _persister.Save(property);
         }
     }
 }

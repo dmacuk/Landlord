@@ -8,6 +8,6 @@ namespace Landlord.Interface
     {
         void GetProperties(Action<List<Property>, Exception> action);
 
-        void Save(Property propertyVo);
+        void Save(Property property);
     }
 }

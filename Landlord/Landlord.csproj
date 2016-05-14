@@ -36,14 +36,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\packages\EntityFramework.6.0.0\lib\net45\EntityFramework.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\packages\EntityFramework.6.0.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="GalaSoft.MvvmLight, Version=5.2.0.37222, Culture=neutral, PublicKeyToken=e7570ab207bcb616, processorArchitecture=MSIL">
       <HintPath>..\packages\MvvmLightLibs.5.2.0.0\lib\net45\GalaSoft.MvvmLight.dll</HintPath>
       <Private>True</Private>
@@ -83,11 +75,10 @@
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
-    <Reference Include="VistaDB.5.Entity.6.NET40, Version=5.1.0.0, Culture=neutral, PublicKeyToken=dfc935afe2125461, processorArchitecture=MSIL">
-      <HintPath>..\packages\VistaDB.5.Entity.6.5.1.2.1432\lib\4.0\VistaDB.5.Entity.6.NET40.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="VistaDB.5.NET40, Version=5.2.0.0, Culture=neutral, PublicKeyToken=dfc935afe2125461, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files (x86)\Gibraltar Software\VistaDB 5\Redist\NET40\VistaDB.5.NET40.dll</HintPath>
     </Reference>
-    <Reference Include="VistaDB.5.NET40, Version=5.1.0.0" />
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -105,42 +96,9 @@
     <Compile Include="Implementations\PropertyDataService.cs" />
     <Compile Include="Interface\IPictureDataService.cs" />
     <Compile Include="Interface\IPropertyDataService.cs" />
-    <Compile Include="Model\Address.cs">
-      <DependentUpon>LandlordModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Model\DataItem.cs" />
-    <Compile Include="Model\Furniture.cs">
-      <DependentUpon>LandlordModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Model\LandlordModel.Context.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>LandlordModel.Context.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Model\LandlordModel.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>LandlordModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Model\LandlordModel.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>LandlordModel.edmx</DependentUpon>
-    </Compile>
-    <Compile Include="Model\Partial\Address.cs" />
-    <Compile Include="Model\Partial\Property.cs" />
-    <Compile Include="Model\Picture.cs">
-      <DependentUpon>LandlordModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Model\Property.cs">
-      <DependentUpon>LandlordModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Model\Room.cs">
-      <DependentUpon>LandlordModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Model\Tennant.cs">
-      <DependentUpon>LandlordModel.tt</DependentUpon>
-    </Compile>
+    <Compile Include="Model\Address.cs" />
+    <Compile Include="Model\Property.cs" />
+    <Compile Include="Persisters\PropertyPersister.cs" />
     <Compile Include="ViewModel\PicturesViewModel.cs" />
     <Compile Include="ViewModel\PropertyViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
@@ -199,13 +157,6 @@
     <None Include="Data\Landlord.vdb5">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <EntityDeploy Include="Model\LandlordModel.edmx">
-      <Generator>EntityModelCodeGenerator</Generator>
-      <LastGenOutput>LandlordModel.Designer.cs</LastGenOutput>
-    </EntityDeploy>
-    <None Include="Model\LandlordModel.edmx.diagram">
-      <DependentUpon>LandlordModel.edmx</DependentUpon>
-    </None>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -222,16 +173,10 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Model\LandlordModel.Context.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>LandlordModel.edmx</DependentUpon>
-      <LastGenOutput>LandlordModel.Context.cs</LastGenOutput>
-    </Content>
-    <Content Include="Model\LandlordModel.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>LandlordModel.edmx</DependentUpon>
-      <LastGenOutput>LandlordModel.cs</LastGenOutput>
-    </Content>
+    <ProjectReference Include="..\..\Utils\Utils\Utils.csproj">
+      <Project>{8D762AA6-63A4-4B17-A8C2-26D10ED6D7C9}</Project>
+      <Name>Utils</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
