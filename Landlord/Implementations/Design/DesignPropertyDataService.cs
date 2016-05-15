@@ -9,12 +9,24 @@ namespace Landlord.Implementations.Design
     {
         public void GetProperties(Action<List<Property>, Exception> action)
         {
-            throw new NotImplementedException();
-        }
+            var results = new List<Property>
+            {
+                new Property
+                {
+                    Address = new Address
+                    {
+                        Address1 = "Address1",
+                        Address2 = "Address2",
+                        Address3 = "Address3",
+                        City = "City",
+                        Postcode = "Postcode",
+                        Country = "Country"
+                    },
+                    Hidden = false
+                }
+            };
 
-        public void GetProperties(Action action)
-        {
-            //
+            action(results, null);
         }
 
         public void Save(Property property)

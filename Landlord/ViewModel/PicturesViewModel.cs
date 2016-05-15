@@ -1,114 +1,161 @@
-﻿using GalaSoft.MvvmLight;
+﻿using System;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.ComponentModel;
+using System.IO;
+using System.Linq;
+using System.Windows.Data;
+using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.Command;
+using Landlord.Interface;
+using Landlord.Model;
+using Landlord.ViewModel.Utils;
+using Microsoft.Win32;
+using Utils.FullyObservableCollection;
 
 namespace Landlord.ViewModel
 {
     public class PicturesViewModel : ViewModelBase
     {
-        //        private readonly IPictureDataService _pictureDataService;
-        //        private readonly List<Picture> _toBeDeleted;
-        //
-        //        public PicturesViewModel(IPictureDataService pictureDataService)
-        //        {
-        //            if (IsInDesignMode) return;
-        //
-        //            _pictureDataService = pictureDataService;
-        //
-        //            Pictures = new ObservableCollection<Picture>();
-        //            _toBeDeleted = new List<Picture>();
-        //            var filenames = new List<string>(Directory.EnumerateFiles(@"d:\Pictures", "*.jpg"));
-        //            //            var pictures = (from filename in filenames
-        //            //                            let data = File.ReadAllBytes(filename)
-        //            //                            select new Picture(new FileInfo(filename).Name, data, 0)).ToList();
-        //            //            Initialise(pictures);
-        //        }
-        //
-        //        public RelayCommand AddImage => new RelayCommand(AddImageExecute);
-        //
-        //        public ObservableCollection<Picture> Pictures { get; set; }
-        //
-        //        public RelayCommand<object> RemoveImage
-        //            => new RelayCommand<object>(RemoveImageExecute);
-        //
-        //        public void Initialise(List<Picture> pictures)
-        //        {
-        //            Pictures.CollectionChanged -= UpdateCollection;
-        //            Pictures.Clear();
-        //            foreach (var picture in pictures)
-        //            {
-        //                Pictures.Add(picture);
-        //            }
-        //            Pictures.CollectionChanged += UpdateCollection;
-        //        }
-        //
-        //        public bool IsDirty()
-        //        {
-        //            return _toBeDeleted.Count > 0; // || Pictures.Any(picture => picture.IsDirty());
-        //        }
-        //
-        //        private void AddImageExecute()
-        //        {
-        //            var dlg = new OpenFileDialog
-        //            {
-        //                DefaultExt = ".png",
-        //                Filter =
-        //                    "JPEG Files (*.jpeg)|*.jpeg|PNG Files (*.png)|*.png|JPG Files (*.jpg)|*.jpg|GIF Files (*.gif)|*.gif"
-        //            };
-        //            // Set filter for file extension and default file extension
-        //
-        //            // Display OpenFileDialog by calling ShowDialog method
-        //            var result = dlg.ShowDialog();
-        //
-        //            // Get the selected file name and display in a TextBox
-        //            if (result == true)
-        //            {
-        //                // Open document
-        //                var filename = dlg.FileName;
-        //            }
-        //        }
-        //
-        //        private void RemoveImageExecute(object o)
-        //        {
-        //            if (o == null)
-        //            {
-        //                // Tell the user
-        //                return;
-        //            }
-        //            var images = ((ObservableCollection<object>)o).Cast<Picture>().ToList();
-        //            if (!images.Any())
-        //            {
-        //                // Tell the user
-        //                return;
-        //            }
-        //
-        //            foreach (var image in images)
-        //            {
-        //                Pictures.Remove(image);
-        //            }
-        //        }
-        //
-        //        private void UpdateCollection(object sender, NotifyCollectionChangedEventArgs e)
-        //        {
-        //            switch (e.Action)
-        //            {
-        //                case NotifyCollectionChangedAction.Add:
-        //                    break;
-        //
-        //                case NotifyCollectionChangedAction.Remove:
-        //                    _toBeDeleted.AddRange(e.OldItems.Cast<Picture>());
-        //                    break;
-        //
-        //                case NotifyCollectionChangedAction.Replace:
-        //                    break;
-        //
-        //                case NotifyCollectionChangedAction.Move:
-        //                    break;
-        //
-        //                case NotifyCollectionChangedAction.Reset:
-        //                    break;
-        //
-        //                default:
-        //                    throw new ArgumentOutOfRangeException();
-        //            }
-        //        }
+        private readonly IPictureDataService _dataService;
+        private readonly IPictureWindowService _windowService;
+        private FullyObservableCollection<Picture> _currentPictures;
+        private long _id;
+        private Picture _picture;
+
+        private ICollectionView _pictures;
+        private PictureType _pictureType;
+
+        public PicturesViewModel(IPictureDataService dataService, IPictureWindowService windowService)
+        {
+            _dataService = dataService;
+            _windowService = windowService;
+        }
+
+        public RelayCommand AddImage => new RelayCommand(AddImageExecute);
+
+        public Picture Picture
+        {
+            get { return _picture; }
+            set { Set(() => Picture, ref _picture, value); }
+        }
+
+        public ICollectionView Pictures
+        {
+            get { return _pictures; }
+            set { Set(() => Pictures, ref _pictures, value); }
+        }
+
+        public RelayCommand<object> RemoveImage
+            => new RelayCommand<object>(RemoveImageExecute);
+
+        public async void Initialise(PictureType pictureType, long id)
+        {
+            _pictureType = pictureType;
+            _id = id;
+
+            await _dataService.GetPictures(pictureType, id, (pictures, error) =>
+            {
+                _currentPictures = new FullyObservableCollection<Picture>(pictures);
+                _currentPictures.CollectionChanged += UpdateCollection;
+                Pictures = CollectionViewSource.GetDefaultView(_currentPictures);
+                ((ListCollectionView)Pictures).CustomSort = new PictureSorter();
+                if (Pictures.IsEmpty) return;
+                Pictures.MoveCurrentToFirst();
+                Picture = (Picture)Pictures.CurrentItem;
+            });
+        }
+
+        public bool IsDirty()
+        {
+            return _currentPictures.Any(picture => picture.IsDirty());
+        }
+
+        public void Save()
+        {
+            var pictures = _currentPictures.Where(p => p.IsDirty());
+            _dataService.Save(pictures);
+        }
+
+        private void AddImageExecute()
+        {
+            var dlg = new OpenFileDialog
+            {
+                DefaultExt = ".png",
+                Filter =
+                    "JPG Files (*.jpg)|*.jpg|JPEG Files (*.jpeg)|*.jpeg|PNG Files (*.png)|*.png|GIF Files (*.gif)|*.gif",
+                Multiselect = true
+            };
+            // Set filter for file extension and default file extension
+
+            // Display OpenFileDialog by calling ShowDialog method
+            var result = dlg.ShowDialog();
+
+            // Get the selected file name and display in a TextBox
+            if (result == true)
+            {
+                foreach (var fileName in dlg.FileNames)
+                {
+                    _currentPictures.Add(new Picture
+                    {
+                        Data = File.ReadAllBytes(fileName),
+                        Description = fileName,
+                        FurnitureId = _pictureType == PictureType.Furniture ? _id : 0L,
+                        PropertyId = _pictureType == PictureType.Property ? _id : 0L,
+                        RoomId = _pictureType == PictureType.Room ? _id : 0L,
+                        TennantId = _pictureType == PictureType.Tennant ? _id : 0L
+                    });
+                }
+            }
+        }
+
+        private void RemoveImageExecute(object o)
+        {
+            if (o == null)
+            {
+                // Tell the user
+                return;
+            }
+            var images = ((ObservableCollection<object>)o).Cast<Picture>().ToList();
+            if (!images.Any())
+            {
+                // Tell the user
+                return;
+            }
+
+            foreach (var image in images)
+            {
+                _currentPictures.Remove(image);
+            }
+        }
+
+        private void UpdateCollection(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            switch (e.Action)
+            {
+                case NotifyCollectionChangedAction.Add:
+                    break;
+
+                case NotifyCollectionChangedAction.Remove:
+                    var pictures = e.OldItems.Cast<Picture>();
+                    foreach (var picture in pictures)
+                    {
+                        if (picture.Id != 0) _dataService.DeletePicture(Picture);
+                    }
+                    break;
+
+                case NotifyCollectionChangedAction.Replace:
+                    break;
+
+                case NotifyCollectionChangedAction.Move:
+                    break;
+
+                case NotifyCollectionChangedAction.Reset:
+                    break;
+
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
     }
 }

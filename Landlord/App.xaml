@@ -18,7 +18,6 @@
         <Style x:Key="CaptionStyle" TargetType="TextBlock" BasedOn="{StaticResource OverallStyle}">
             <Setter Property="FontWeight" Value="Bold" />
         </Style>
-        <Style x:Key="TextBoxStyle" TargetType="TextBox" BasedOn="{StaticResource OverallStyle}">
-        </Style>
+        <Style x:Key="TextBoxStyle" TargetType="TextBox" BasedOn="{StaticResource OverallStyle}" />
     </Application.Resources>
 </Application>

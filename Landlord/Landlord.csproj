@@ -54,6 +54,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\MvvmLightLibs.5.2.0.0\lib\net45\System.Windows.Interactivity.dll</HintPath>
       <Private>True</Private>
@@ -76,22 +77,36 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Convertors\BooleanToBorderBackgroundConvertor.cs" />
     <Compile Include="Convertors\ByteArrayToImageConverter.cs" />
     <Compile Include="Exceptions\AddressTypeException.cs" />
     <Compile Include="Implementations\Design\DesignPictureDataService.cs" />
+    <Compile Include="Implementations\Design\DesignPictureWindowService.cs" />
     <Compile Include="Implementations\Design\DesignPropertyDataService.cs" />
+    <Compile Include="Implementations\Design\DesignPropertyWindowService.cs" />
     <Compile Include="Implementations\PictureDataService.cs" />
+    <Compile Include="Implementations\PictureWindowService.cs" />
     <Compile Include="Implementations\PropertyDataService.cs" />
+    <Compile Include="Implementations\PropertyWindowService.cs" />
     <Compile Include="Interface\IPictureDataService.cs" />
+    <Compile Include="Interface\IPictureWindowService.cs" />
     <Compile Include="Interface\IPropertyDataService.cs" />
+    <Compile Include="Interface\IPropertyWindowService.cs" />
     <Compile Include="Model\Address.cs" />
+    <Compile Include="Model\Picture.cs" />
     <Compile Include="Model\Property.cs" />
+    <Compile Include="Persisters\PicturePersister.cs" />
     <Compile Include="Persisters\PropertyPersister.cs" />
-    <Compile Include="Persisters\Utils\SQLUtils.cs" />
+    <Compile Include="Persisters\Utils\PropertySqlUtils.cs" />
+    <Compile Include="Persisters\Utils\SqlUtils.cs" />
     <Compile Include="ViewModel\PicturesViewModel.cs" />
     <Compile Include="ViewModel\PropertyViewModel.cs" />
+    <Compile Include="ViewModel\Utils\PictureSorter.cs" />
     <Compile Include="ViewModel\Utils\PropertySorter.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
+    <Compile Include="Views\PictureView.xaml.cs">
+      <DependentUpon>PictureView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\PropertyView.xaml.cs">
       <DependentUpon>PropertyView.xaml</DependentUpon>
     </Compile>
@@ -101,18 +116,14 @@
     <Compile Include="Views\UserControls\PropertyList.xaml.cs">
       <DependentUpon>PropertyList.xaml</DependentUpon>
     </Compile>
-    <Page Include="MainWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="MainWindow.xaml.cs">
-      <DependentUpon>MainWindow.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
+    <Page Include="Views\PictureView.xaml">
+      <SubType>Form</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\PropertyView.xaml">
       <SubType>Form</SubType>
       <Generator>MSBuild:Compile</Generator>

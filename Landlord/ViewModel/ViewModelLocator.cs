@@ -34,19 +34,23 @@ namespace Landlord.ViewModel
             if (ViewModelBase.IsInDesignModeStatic)
             {
                 SimpleIoc.Default.Register<IPictureDataService, DesignPictureDataService>();
+                SimpleIoc.Default.Register<IPictureWindowService, DesignPictureWindowService>();
                 SimpleIoc.Default.Register<IPropertyDataService, DesignPropertyDataService>();
+                SimpleIoc.Default.Register<IPropertyWindowService, DesignPropertyWindowService>();
             }
             else
             {
                 SimpleIoc.Default.Register<IPictureDataService, PictureDataService>();
+                SimpleIoc.Default.Register<IPictureWindowService, PictureWindowService>();
                 SimpleIoc.Default.Register<IPropertyDataService, PropertyDataService>();
+                SimpleIoc.Default.Register<IPropertyWindowService, PropertyWindowService>();
             }
 
             SimpleIoc.Default.Register<PicturesViewModel>();
             SimpleIoc.Default.Register<PropertyViewModel>();
         }
 
-        public PicturesViewModel Pictures => ServiceLocator.Current.GetInstance<PicturesViewModel>();
+        public PicturesViewModel PicturesViewModel => ServiceLocator.Current.GetInstance<PicturesViewModel>();
 
         public PropertyViewModel PropertyViewModel => ServiceLocator.Current.GetInstance<PropertyViewModel>();
 

@@ -14,12 +14,15 @@ namespace Landlord.ViewModel
     public class PropertyViewModel : ViewModelBase
     {
         private readonly IPropertyDataService _dataService;
+        private readonly IPropertyWindowService _windowService;
 
         private Address _address;
 
         private string _dummy;
 
         private string _filterValue;
+
+        private RelayCommand _pictures;
 
         //        private string _postcode;
         private FullyObservableCollection<Property> _properties;
@@ -28,9 +31,10 @@ namespace Landlord.ViewModel
 
         private bool _showHidden;
 
-        public PropertyViewModel(IPropertyDataService dataService)
+        public PropertyViewModel(IPropertyDataService dataService, IPropertyWindowService windowService)
         {
             _dataService = dataService;
+            _windowService = windowService;
             _dataService.GetProperties((properties, error) =>
             {
                 if (error != null)
@@ -72,6 +76,9 @@ namespace Landlord.ViewModel
             get { return Property.Address.FullAddress; }
             set { Set(() => FullAddress, ref _dummy, value); }
         }
+
+        public RelayCommand Pictures
+            => _pictures ?? (_pictures = new RelayCommand(PicturesExecute, PicturesCanExecute));
 
         public ICollectionView Properties { get; private set; }
 
@@ -127,6 +134,16 @@ namespace Landlord.ViewModel
             if (!ShowHidden && vo.Hidden) return false;
             return string.IsNullOrWhiteSpace(FilterValue) ||
                    vo.Address.FullAddress.ToLower().Contains(FilterValue.ToLower().Trim());
+        }
+
+        private bool PicturesCanExecute()
+        {
+            return Property != null;
+        }
+
+        private void PicturesExecute()
+        {
+            _windowService.ShowPictures(PictureType.Property, Property.Id);
         }
     }
 }

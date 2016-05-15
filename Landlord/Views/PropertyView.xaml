@@ -11,14 +11,32 @@
     mc:Ignorable="d ignore"
     Closing="WindowClosing">
 
-    <Window.Resources>
-    </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
         <userControls:PropertyList Grid.Column="0" />
-        <userControls:PropertyAddress Grid.Column="1" />
+        <StackPanel Grid.Column="1">
+            <userControls:PropertyAddress />
+            <StackPanel
+                Orientation="Horizontal"
+                HorizontalAlignment="Center"
+                Style="{StaticResource OverallStyle}">
+                <Button
+                    Content="Pictures"
+                    Style="{StaticResource OverallStyle}"
+                    Width="{Binding ElementName=TennantsButton, Path=ActualWidth}"
+                    Command="{Binding Pictures}" />
+                <Button
+                    Content="Rooms"
+                    Style="{StaticResource OverallStyle}"
+                    Width="{Binding ElementName=TennantsButton, Path=ActualWidth}" />
+                <Button
+                    x:Name="TennatnsButton"
+                    Content="Tennants"
+                    Style="{StaticResource OverallStyle}" />
+            </StackPanel>
+        </StackPanel>
     </Grid>
 </Window>

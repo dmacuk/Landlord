@@ -5,15 +5,17 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:model="clr-namespace:Landlord.Model"
+    xmlns:convertors="clr-namespace:Landlord.Convertors"
     d:DesignHeight="300"
     d:DesignWidth="300"
     DataContext="{Binding PropertyViewModel, Source={StaticResource Locator}}"
     mc:Ignorable="d">
     <UserControl.Resources>
+        <convertors:BooleanToBorderBackgroundConvertor x:Key="BorderBackgroundConvertor" />
         <DataTemplate x:Key="PropertyItemTemplate" DataType="model:Property">
-            <StackPanel Margin="5">
-                <TextBlock FontWeight="Bold" Text="{Binding Address.FullAddress}" />
-            </StackPanel>
+            <Border Background="{Binding Hidden, Converter={StaticResource BorderBackgroundConvertor}}">
+                <TextBlock FontWeight="Bold" Text="{Binding Address.FullAddress}" Style="{StaticResource OverallStyle}" />
+            </Border>
         </DataTemplate>
     </UserControl.Resources>
     <Grid>
@@ -40,7 +42,8 @@
                 Grid.Row="0"
                 Grid.Column="1"
                 Style="{StaticResource TextBoxStyle}"
-                Text="{Binding FilterValue, UpdateSourceTrigger=PropertyChanged}" />
+                Text="{Binding FilterValue, UpdateSourceTrigger=PropertyChanged}"
+                MinWidth="150" />
             <TextBlock
                 Grid.Row="1"
                 Grid.Column="0"
@@ -57,7 +60,8 @@
             Style="{StaticResource OverallStyle}"
             ItemTemplate="{StaticResource PropertyItemTemplate}"
             ItemsSource="{Binding Properties}"
-            SelectedItem="{Binding Property}" />
+            SelectedItem="{Binding Property}"
+            HorizontalContentAlignment="Stretch" />
         <StackPanel
             Grid.Row="2"
             HorizontalAlignment="Center"

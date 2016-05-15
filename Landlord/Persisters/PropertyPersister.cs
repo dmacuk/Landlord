@@ -1,9 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Data.Common;
-using System.Threading.Tasks;
 using Landlord.Model;
 using Landlord.Persisters.Utils;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Landlord.Persisters
 {
@@ -12,7 +10,7 @@ namespace Landlord.Persisters
         public async Task<List<Property>> GetProperties()
         {
             var results = new List<Property>();
-            using (var connection = GetConnection())
+            using (var connection = SqlUtils.GetConnection())
             {
                 using (var propertyCmd = connection.CreateCommand())
                 {
@@ -54,52 +52,42 @@ namespace Landlord.Persisters
 
         private static async Task AddProperty(Property property)
         {
-            using (var conn = GetConnection())
+            using (var conn = SqlUtils.GetConnection())
             {
                 using (var cmd = conn.CreateCommand())
                 {
-                    cmd.CommandText = SqlUtils.InsertAddress;
-                    var parameters = SqlUtils.GetAddressParameters(cmd, property.Address);
+                    cmd.CommandText = PropertySqlUtils.InsertAddress;
+                    var parameters = PropertySqlUtils.GetAddressParameters(cmd, property.Address);
                     cmd.Parameters.AddRange(parameters);
                     await cmd.ExecuteNonQueryAsync();
-                    cmd.CommandText = SqlUtils.LastIdentity;
+                    cmd.CommandText = PropertySqlUtils.LastIdentity;
                     var addressId = await cmd.ExecuteScalarAsync();
 
                     // @Address1, @Address2, @Address3, @City, @Postcode, @Country
                     property.AddressId = (long)addressId;
-                    cmd.CommandText = SqlUtils.InsertProperty;
+                    cmd.CommandText = PropertySqlUtils.InsertProperty;
                     cmd.Parameters.Clear();
-                    parameters = SqlUtils.GetPropertyParameters(cmd, property);
+                    parameters = PropertySqlUtils.GetPropertyParameters(cmd, property);
                     cmd.Parameters.AddRange(parameters);
                     await cmd.ExecuteNonQueryAsync();
                 }
             }
         }
 
-        private static DbConnection GetConnection()
-        {
-            var providerFactory = DbProviderFactories.GetFactory("System.Data.VistaDB5");
-            var connection = providerFactory.CreateConnection();
-            if (connection == null) throw new Exception("No provider for System.Data.VistaDB5");
-            connection.ConnectionString = @"Data Source=data\Landlord.vdb5";
-            connection.Open();
-            return connection;
-        }
-
         private async Task UpdateProperty(Property property)
         {
-            using (var conn = GetConnection())
+            using (var conn = SqlUtils.GetConnection())
             {
                 using (var cmd = conn.CreateCommand())
                 {
-                    cmd.CommandText = SqlUtils.UpdateProperty;
-                    var parameters = SqlUtils.GetPropertyParameters(cmd, property);
+                    cmd.CommandText = PropertySqlUtils.UpdateProperty;
+                    var parameters = PropertySqlUtils.GetPropertyParameters(cmd, property);
                     cmd.Parameters.AddRange(parameters);
                     await cmd.ExecuteNonQueryAsync();
 
-                    cmd.CommandText = SqlUtils.UpdateAddress;
+                    cmd.CommandText = PropertySqlUtils.UpdateAddress;
                     cmd.Parameters.Clear();
-                    parameters = SqlUtils.GetAddressParameters(cmd, property.Address);
+                    parameters = PropertySqlUtils.GetAddressParameters(cmd, property.Address);
                     cmd.Parameters.AddRange(parameters);
                     await cmd.ExecuteNonQueryAsync();
                 }

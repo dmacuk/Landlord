@@ -1,7 +1,7 @@
-﻿using Landlord.ViewModel;
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.Windows;
+using Landlord.ViewModel;
 
 namespace Landlord.Views
 {
@@ -21,25 +21,23 @@ namespace Landlord.Views
         private void WindowClosing(object sender, CancelEventArgs e)
         {
             var model = (PropertyViewModel)DataContext;
-            if (model.IsDirty())
+            if (!model.IsDirty()) return;
+            var opt = MessageBox.Show(this, "Save changes?", "", MessageBoxButton.YesNoCancel);
+            switch (opt)
             {
-                var opt = MessageBox.Show(this, "Save changes?", "", MessageBoxButton.YesNoCancel);
-                switch (opt)
-                {
-                    case MessageBoxResult.Cancel:
-                        e.Cancel = true;
-                        break;
+                case MessageBoxResult.Cancel:
+                    e.Cancel = true;
+                    break;
 
-                    case MessageBoxResult.Yes:
-                        model.Save();
-                        break;
+                case MessageBoxResult.Yes:
+                    model.Save();
+                    break;
 
-                    case MessageBoxResult.No:
-                        break;
+                case MessageBoxResult.No:
+                    break;
 
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
         }
     }
